@@ -65,9 +65,9 @@ public class EnemySpawner : MonoBehaviour
                 enemiesToSpawn = wave * 3;
 
 
-                if (spawnTime > 0.3f)
+                if (spawnTime > 0.25f)
                 {
-                    spawnTime *= 0.90f;
+                    spawnTime *= 0.85f;
                 }
 
                 StartCoroutine(SpawnEnemy());
