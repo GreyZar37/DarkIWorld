@@ -127,7 +127,6 @@ public class EnemySpawner : MonoBehaviour
                 }
 
                
-                    print("Spawning enemy");
                     enemiesInScene.Add(Instantiate(enemies[enemyIndex], spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.identity));
                     yield return new WaitForSeconds(spawnTime);
                     enemiesToSpawn--;

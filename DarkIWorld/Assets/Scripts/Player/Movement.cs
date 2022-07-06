@@ -13,6 +13,8 @@ public class Movement : MonoBehaviour
     Vector2 movement;
     Vector2 mousePos;
 
+    Vector2 lookDir;
+
     Animator animator;
 
     float xPosition = 100;
@@ -46,14 +48,14 @@ public class Movement : MonoBehaviour
         rb.MovePosition(rb.position + movement.normalized * moveSpeed * Time.fixedDeltaTime);
 
 
-        Vector2 lookDir = mousePos - rb.position;
+        lookDir = mousePos - rb.position;
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
         hand.rotation = Quaternion.Euler(0, 0, angle);
     }
     
     public void flip()
     {
-        if(hand.eulerAngles.z > 180 && hand.eulerAngles.z < 360)
+        if(lookDir.x > 0)
         {
             transform.localScale = new Vector3(1, 1, 1);
         }
