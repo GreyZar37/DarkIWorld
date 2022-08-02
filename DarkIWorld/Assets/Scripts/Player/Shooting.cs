@@ -1,6 +1,8 @@
-using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
+
 
 public class Shooting : MonoBehaviour
 {
@@ -12,13 +14,14 @@ public class Shooting : MonoBehaviour
     public Transform gunPosition;
     int bullets;
 
+    public ParticleSystem shootParticle;
+
     CameraShaker cameraShake;
 
     AudioSource sfx;
 
     public AudioClip[] shotSound;
     public AudioClip[] relaodingSound;
-    public AudioClip gunReadySound;
 
     float shootCooldownTime;
     float currentTimer;
@@ -26,17 +29,25 @@ public class Shooting : MonoBehaviour
     public int maxAmmunition;
     int ammoInMagazine;
 
-    [Header ("Gun")]
-    public float relaodSpeed;
+    [Header("Gun")]
+
+    public Slider reloadTimerSlider;
+
+
+    public float reloadCooldown;
+    float currentReloadCooldown;
     bool reloding;
-    bool startReloding;
-    public int AmmoPrRelaod;
-    public Slider ammoSlider;
+
+    float autoReloadTimer;
+    float autoReloadTimerCooldown;
+
+    public TextMeshProUGUI ammoText;
+    public TextMeshProUGUI ammoTextSmall;
 
     [Header("Granade")]
-     float granadeCooldownTimer = 15f;
+    float granadeCooldownTimer = 15f;
     float currentGranadeTimer;
-    
+
 
     // Start is called before the first frame update
     void Start()
@@ -48,51 +59,80 @@ public class Shooting : MonoBehaviour
         sfx = GameObject.Find("SFX AudioSource").GetComponent<AudioSource>();
 
 
-        relaodSpeed = PlayerStatMachine.instance.relaodSpeed;
+        reloadCooldown = PlayerStatMachine.instance.reloadTime;
         maxAmmunition = PlayerStatMachine.instance.maxAmmunition;
-        AmmoPrRelaod = PlayerStatMachine.instance.ammoPrRelaod;
 
 
         ammoInMagazine = maxAmmunition;
-
+        currentReloadCooldown = reloadCooldown;
     }
 
     // Update is called once per frame
     void Update()
     {
+        reloadTimerSlider.minValue = -reloadCooldown;
+
+
+        autoReloadTimerCooldown = shootCooldownTime + 0.1f;
         granadeClooldwonSlider.maxValue = granadeCooldownTimer;
         granadeClooldwonSlider.value = currentGranadeTimer;
 
+        ammoText.text = ammoInMagazine + "/" + maxAmmunition;
+        ammoTextSmall.text = ammoInMagazine.ToString();
 
         bullets = PlayerStatMachine.instance.bullets;
         shootCooldownTime = PlayerStatMachine.instance.shootSpeed;
-        relaodSpeed = PlayerStatMachine.instance.relaodSpeed;
+        reloadCooldown = PlayerStatMachine.instance.reloadTime;
         maxAmmunition = PlayerStatMachine.instance.maxAmmunition;
-        AmmoPrRelaod = PlayerStatMachine.instance.ammoPrRelaod;
-
-        ammoSlider.maxValue = maxAmmunition;
-        ammoSlider.value = ammoInMagazine;
 
 
-        if (ammoInMagazine <= 0 || Input.GetKeyDown(KeyCode.R) && !reloding && ammoInMagazine != maxAmmunition)
+
+        if (ammoInMagazine != maxAmmunition)
         {
+            autoReloadTimer -= Time.deltaTime;
 
-            reloding = true;
-        }
-      
+            if (Input.GetKeyDown(KeyCode.R) || ammoInMagazine <= 0)
+            {
+                autoReloadTimer = 0;
+            }
 
-        if(reloding == true && startReloding == false)
-        { 
-           StartCoroutine(relaodingFc());
-            startReloding = true;
+            if (autoReloadTimer <= 0 && !reloding)
+            {
+
+                sfx.PlayOneShot(relaodingSound[0]);
+                print("faf");
+                reloding = true;
+            }
+
         }
-        else if(reloding == false)
+        else
+        {
+            reloadTimerSlider.gameObject.SetActive(false);
+        }
+
+
+
+
+        if (reloding)
+        {
+            reloadTimerSlider.gameObject.SetActive(true);
+            
+            Relaod();
+        }
+        else
+        {
+            reloadTimerSlider.gameObject.SetActive(false);
+
+
+        }
+
+        if(GameManager.currentGameState == gameState.playing)
         {
             shoot();
         }
+        
 
-
-        if (Input.GetKeyDown(KeyCode.G) && currentGranadeTimer <= 0)
+        if (Input.GetKeyDown(KeyCode.G) && currentGranadeTimer <= 0 && GameManager.currentGameState == gameState.playing)
         {
             Instantiate(granade, gunPosition.position, gunPosition.rotation);
             currentGranadeTimer = granadeCooldownTimer;
@@ -100,7 +140,7 @@ public class Shooting : MonoBehaviour
         else
         {
             currentGranadeTimer -= Time.deltaTime;
-            
+
         }
 
     }
@@ -109,24 +149,38 @@ public class Shooting : MonoBehaviour
     {
         currentTimer -= Time.deltaTime;
 
-        if (Input.GetMouseButton(0) && currentTimer <= 0 )
+
+
+
+        if (Input.GetMouseButton(0) && currentTimer <= 0 && ammoInMagazine > 0 )
         {
+
+            autoReloadTimer = autoReloadTimerCooldown;
+            currentReloadCooldown = reloadCooldown;
+            ammoInMagazine--;
+
+            
+            reloding = false;
+
             for (int i = 0; i < bullets; i++)
             {
-                ammoInMagazine--;
+
 
                 if (bullets > 1 && ammoInMagazine > 0)
                 {
+
                     Quaternion rotation = Quaternion.Euler(0, 0, Random.Range(-10, 10));
                     Instantiate(bulletPrefab, gunPosition.position, gunPosition.rotation * rotation);
                 }
                 else
                 {
+
                     Instantiate(bulletPrefab, gunPosition.position, gunPosition.rotation);
 
                 }
 
             }
+            shootParticle.Play();
             currentTimer = shootCooldownTime;
             cameraShake.isShaking = true;
             sfx.PlayOneShot(shotSound[Random.Range(0, shotSound.Length)]);
@@ -134,37 +188,32 @@ public class Shooting : MonoBehaviour
         }
     }
 
-    IEnumerator relaodingFc()
+    public void Relaod()
     {
-        print("realoding");
-        while(ammoInMagazine < maxAmmunition)
+
+        if (currentReloadCooldown <= 0)
         {
-            ammoInMagazine += AmmoPrRelaod;
-            
-            if (ammoInMagazine >= maxAmmunition)
-            {
-                sfx.PlayOneShot(gunReadySound, 0.3f);
-                ammoInMagazine = maxAmmunition;
-            }
-            else
-            {
-                sfx.PlayOneShot(relaodingSound[Random.Range(0, relaodingSound.Length)],0.3f);
+            ammoInMagazine = maxAmmunition;
+            currentReloadCooldown = reloadCooldown;
 
-            }
-            yield return new WaitForSeconds(relaodSpeed);
-
-            
+            reloding = false;
 
         }
-
-        if (ammoInMagazine >= maxAmmunition)
+        else
         {
-            reloding = false;
-            startReloding = false;
+
+            currentReloadCooldown -= Time.deltaTime;
+            reloadTimerSlider.value = -currentReloadCooldown;
 
         }
 
 
 
     }
+
+
+
+
+
+
 }

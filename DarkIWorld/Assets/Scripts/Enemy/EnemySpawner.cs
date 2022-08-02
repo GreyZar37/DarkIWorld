@@ -5,6 +5,9 @@ using TMPro;
 
 public class EnemySpawner : MonoBehaviour
 {
+    public GameObject levelSlider;
+    public GameObject bossHealthSlider;
+    
     public List<GameObject> enemiesInScene = new List<GameObject>();
 
     public static EnemySpawner instance;
@@ -62,19 +65,33 @@ public class EnemySpawner : MonoBehaviour
             
             if (bossSpawned == false)
             {
-                enemiesToSpawn = wave * 3;
-
-
-                if (spawnTime > 0.25f)
+                bossHealthSlider.SetActive(false);
+                levelSlider.SetActive(true);
+                
+                if (wave < 5)
                 {
-                    spawnTime *= 0.85f;
+                    spawnTime *= 0.65f;
+                    enemiesToSpawn = wave * 5;
                 }
+                else
+                {
+                    if (spawnTime > 0.35f)
+                    {
+                        spawnTime *= 0.90f;
+
+                    }
+                    enemiesToSpawn = wave * 3;
+
+                }
+
 
                 StartCoroutine(SpawnEnemy());
             }
+            
         }
         else
         {
+          
             bossSpawned = false;
         }
            
@@ -87,53 +104,53 @@ public class EnemySpawner : MonoBehaviour
         
         while (enemiesToSpawn > 0)
         {
-            
-
-            if (spawnPoints != null)
-            {
-                int randomNumber = Random.Range(0, 100);
-
-                if (wave >= 2 && wave < 5)
+         
+        if (spawnPoints != null)
                 {
-                    if (randomNumber > 30)
+                    int randomNumber = Random.Range(0, 100);
+
+                    if (wave >= 4 && wave < 5)
                     {
-                        enemyIndex = 0;
+                        if (randomNumber > 30)
+                        {
+                            enemyIndex = 0;
+                        }
+                        else
+                        {
+                            enemyIndex = 1;
+                        }
+
+                    }
+
+                    else if (wave > 5)
+                    {
+                        if (randomNumber >= 50)
+                        {
+                            enemyIndex = 0;
+                        }
+                        else if (randomNumber >= 20 && randomNumber < 50)
+                        {
+                            enemyIndex = 1;
+                        }
+                        else
+                        {
+                            enemyIndex = 2;
+                        }
                     }
                     else
                     {
-                        enemyIndex = 1;
-                    }
-
-                }
-               
-                else if(wave > 5)
-                {
-                    if (randomNumber >= 50)
-                    {
                         enemyIndex = 0;
                     }
-                    else if(randomNumber >= 20 && randomNumber < 50)
-                    {
-                        enemyIndex = 1;
-                    }
-                    else
-                    {
-                        enemyIndex = 2;
-                    }
-                }
-                else
-                {
-                    enemyIndex = 0;
-                }
 
-               
+                 
                     enemiesInScene.Add(Instantiate(enemies[enemyIndex], spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.identity));
-                    yield return new WaitForSeconds(spawnTime);
                     enemiesToSpawn--;
                 
-           
+                  
+                yield return new WaitForSeconds(spawnTime);
+
             }
-          
+
         }
     }
 
@@ -141,7 +158,8 @@ public class EnemySpawner : MonoBehaviour
     {
         if(wave % 5 == 0 && bossSpawned == false)
         {
-
+            bossHealthSlider.SetActive(true);
+            levelSlider.SetActive(false);
             int random = Random.Range(0, bosses.Length);
             enemiesInScene.Add(Instantiate(bosses[random], spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.identity));
             bossSpawned = true;

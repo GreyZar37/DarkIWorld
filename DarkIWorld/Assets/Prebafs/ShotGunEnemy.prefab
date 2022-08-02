@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2357508645187158045}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -3.26, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4375590312607371348}
@@ -82,7 +82,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!1 &3624151625496739226
 GameObject:
   m_ObjectHideFlags: 0
@@ -250,7 +250,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyHealth: 125
-  xpGain: 150
+  xpGain: 75
   audioSource: {fileID: 0}
   deathSound:
   - {fileID: 8300000, guid: e50fbf7de6e0f7146a0968523ee243fa, type: 3}
@@ -259,10 +259,15 @@ MonoBehaviour:
   hitSound:
   - {fileID: 8300000, guid: 54b3b109a2140f24aa3370e9190b159e, type: 3}
   - {fileID: 8300000, guid: c802c4fc9d483b54ebc523ae1afa9af3, type: 3}
+  explosionSound:
+  - {fileID: 8300000, guid: 1cc655301f89bd146a469fcb16fe78dc, type: 3}
+  - {fileID: 8300000, guid: 9bdfa9f9e0636714ab7d62b2ad79c98c, type: 3}
   damageTxt: {fileID: 2037489249205486809, guid: 172cb1dafb9b0a54eb469e4a1eafe414, type: 3}
   flashMaterial: {fileID: 2100000, guid: ccbc9bfcb0c0beb4e847be9142e010b4, type: 2}
   originalMaterial: {fileID: 0}
-  particleSystem_: {fileID: 7971779134538704883, guid: a7470aa7bb28a4b4d880a419d9769d51, type: 3}
+  bloodParticle: {fileID: 7971779134538704883, guid: a7470aa7bb28a4b4d880a419d9769d51, type: 3}
+  deathExplodeParticles: {fileID: 330982060744783343, guid: 31a28c6e5f77e2a4b8671da250b8692b, type: 3}
+  bullet: {fileID: 7361831037440657854, guid: 0a4da27d0b79d6649beee46c76e18102, type: 3}
 --- !u!114 &4375590312607371354
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -279,7 +284,7 @@ MonoBehaviour:
   speed: 15
   stoopingDistance: 30
   retreatDistance: 0
-  attackCooldown: 1.5
+  attackCooldown: 2
   bullet: {fileID: 3409883888029466394, guid: e8fb756b59d00d04795b0134069903fd, type: 3}
   firePoints:
   - {fileID: 5810157414372227532}
@@ -334,7 +339,7 @@ SortingGroup:
   m_Enabled: 1
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 1
 --- !u!1 &5810157414372227539
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,34 +6,45 @@ public class Movement : MonoBehaviour
 {
     public float moveSpeed;
 
-    public Rigidbody2D rb;
+    public ParticleSystem dirtSystem;
+    Rigidbody2D rb;
     public Camera cam;
     public Transform hand;
 
-    Vector2 movement;
+    public Vector2 movement;
     Vector2 mousePos;
-
     Vector2 lookDir;
 
-    Animator animator;
+    public Animator animator;
 
     float xPosition = 100;
     float yPosition = 100;
+
+    float velocity;
 
     // Update is called once per frame
 
     private void Start()
     {
-        animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
     }
 
     void Update()
     {
-        animator.SetFloat("Velocity", Mathf.Abs(movement.x) + Mathf.Abs(movement.y));
+        velocity = Mathf.Abs(movement.x) + Mathf.Abs(movement.y);
+        animator.SetFloat("Velocity", velocity);
+       
+        if(velocity > 0 && !dirtSystem.isPlaying)
+        {
+            dirtSystem.Play();
+        }
+        else if (velocity <= 0 && dirtSystem.isPlaying)
+        {
+            dirtSystem.Stop();
+        }
+
         movementConstraint();
-
         moveSpeed = PlayerStatMachine.instance.playerSpeed;
-
 
         flip();
         movement.x = Input.GetAxisRaw("Horizontal");

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class YothulBossScript : MonoBehaviour
 {
@@ -21,8 +22,18 @@ public class YothulBossScript : MonoBehaviour
     public float speed;
     public float stoopingDistance;
 
+    public Slider bossHealth;
+    float health;
+
+
+   
     private void Awake()
     {
+        bossHealth = GameObject.FindGameObjectWithTag("BossSlider").GetComponent<Slider>();
+
+        health = gameObject.GetComponent<EnemyHealth>().enemyHealth;
+        bossHealth.maxValue = health;
+
         player = GameObject.FindGameObjectWithTag("Player").transform;
 
         rb2D = GetComponent<Rigidbody2D>();
@@ -33,10 +44,10 @@ public class YothulBossScript : MonoBehaviour
 
     void Update()
     {
+        bossHealth.value = gameObject.GetComponent<EnemyHealth>().enemyHealth;
 
-       
 
-        if(player != null)
+        if (player != null)
         {
             if (spawnCooldown > 0)
             {

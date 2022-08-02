@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TextAnim : MonoBehaviour
 {
-    float lifeSpanTimer = 3f;
+    float lifeSpanTimer = 1.5f;
     float speed;
 
     Rigidbody2D rb;
@@ -15,8 +15,9 @@ public class TextAnim : MonoBehaviour
     {
         speed = Random.Range(10, 20);
         rb = GetComponent<Rigidbody2D>();
-
-        rb.AddForce(Vector2.up * speed, ForceMode2D.Impulse);
+        
+        gameObject.transform.rotation =  Quaternion.Euler(0,0,Random.Range(-25, 26));
+        rb.AddForce(transform.up * speed, ForceMode2D.Impulse);
 
     }
 

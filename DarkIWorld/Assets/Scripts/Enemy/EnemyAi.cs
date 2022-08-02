@@ -27,7 +27,8 @@ public class EnemyAi : MonoBehaviour
     Rigidbody2D rb2D;
 
     Transform player;
-    Rigidbody2D playerRb;
+    Movement playerMovement;
+    Vector2 playerVelocity;
 
     public enemyType enemyType_;
 
@@ -36,7 +37,8 @@ public class EnemyAi : MonoBehaviour
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
-      
+        playerMovement = player.GetComponent<Movement>();
+  
 
         rb2D = GetComponent<Rigidbody2D>();
 
@@ -46,6 +48,7 @@ public class EnemyAi : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        playerVelocity = playerMovement.movement;
 
         flip();
 
@@ -60,8 +63,8 @@ public class EnemyAi : MonoBehaviour
             {
                 if (Vector2.Distance(transform.position, player.position) > stoopingDistance)
                 {
-                    transform.position = Vector2.MoveTowards(transform.position, player.position, speed * Time.deltaTime);
 
+                    moveToPlayer();
                 }
 
                 else if (Vector2.Distance(transform.position, player.position) < retreatDistance && enemyType_ == enemyType.ranged)
@@ -98,8 +101,7 @@ public class EnemyAi : MonoBehaviour
             {
                 if (Vector2.Distance(transform.position, player.position) > stoopingDistance)
                 {
-                    transform.position = Vector2.MoveTowards(transform.position, player.position, speed * Time.deltaTime);
-
+                    moveToPlayer();
                 }
                 if(Vector2.Distance(transform.position, player.position) < stoopingDistance + 1f)
                 {
@@ -129,11 +131,20 @@ public class EnemyAi : MonoBehaviour
     {
         if (enemyType_.Equals(enemyType.ranged))
         {
-           
+           if(Mathf.Abs(playerVelocity.x) + Mathf.Abs(playerVelocity.y) == 0)
+            {
+                Instantiate(bullet, firePoints[0].position, firePoints[0].rotation * Quaternion.identity);
 
-            Quaternion rotation = Quaternion.Euler(0, 0, Random.Range(-45, 45));
+            }
+            else
+            {
+                Quaternion rotation = Quaternion.Euler(0, 0, Random.Range(-45, 45));
 
-            Instantiate(bullet, firePoints[0].position, firePoints[0].rotation * rotation);
+                Instantiate(bullet, firePoints[0].position, firePoints[0].rotation * rotation);
+
+            }
+
+
 
         }
 
@@ -169,6 +180,19 @@ public class EnemyAi : MonoBehaviour
         }
 
     }
+
+    
+
+    
+    void moveToPlayer()
+    {
+       
+            transform.position = Vector2.MoveTowards(transform.position, player.position, speed * Time.deltaTime);
+
+        
+
+    }
+
 
 }
 

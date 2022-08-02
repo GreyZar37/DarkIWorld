@@ -12,14 +12,16 @@ public enum skillStones
 
     //unCommon skillStones
     healSkillStone,
-    bulletPenetrationSkillStone,
     maxAmmunitionSkillStone,
 
     //Rare skillStones
-    ammoPrRelaod,
-    
+    bulletPenetrationSkillStone,
+
+
     //Epic skillStones
     ekstraBulletSkillStone,
+    explosiveBodies,
+    betryal,
 
 }
 
@@ -31,7 +33,9 @@ public class SkillStoneSystem : MonoBehaviour
     public GameObject skillStonePanel;
     public GameObject skillStoneItemHolder;
 
+    public Animator levelPanelAnimator;
 
+    
     public GameObject skillStone;
     
     int maxSkillStoneCount = 4;
@@ -39,27 +43,33 @@ public class SkillStoneSystem : MonoBehaviour
 
     public int skillStoneTakeAmount;
 
-    float commonDropRate = 60f, unCommonDropRate = 25f, rareDropRate = 5f , epicDropRate = 1f, legendaryDropRate = 0;
+    float commonDropRate = 70f, unCommonDropRate = 35f, rareDropRate = 20f , epicDropRate = 1f;
     float randomNumber;
 
     public List<skillStones> skillStoneList = new List<skillStones>();
+
+
+    bool timeSet = false;
 
     private void Start()
     {
         instance = this;
         currentCount = maxSkillStoneCount;
-
     }
 
     private void Update()
     {
 
-    
-
-
         if (skillStoneTakeAmount != 0)
         {
+            Cursor.visible = true;
             Time.timeScale = 0;
+            GameManager.currentGameState = gameState.paused;
+          
+            skillStonePanel.SetActive(true);
+            levelPanelAnimator.SetBool("SelectStone", true);
+
+
 
             while (currentCount > 0)
             {
@@ -68,14 +78,31 @@ public class SkillStoneSystem : MonoBehaviour
                 currentCount--;
 
             }
+            timeSet = false;
+
         }
         else
         {
-            Time.timeScale = 1;
 
-            skillStonePanel.SetActive(false);
-            skillStoneList.Clear();
-            skillStoneCountResset();
+            if (timeSet == false)
+            {
+                Cursor.visible = false;
+
+                Time.timeScale = 1;
+                GameManager.currentGameState = gameState.playing;
+                
+                if(skillStonePanel.activeSelf)
+                {
+                    levelPanelAnimator.SetBool("SelectStone", false);
+                }
+
+                skillStonePanel.SetActive(false);
+
+                skillStoneList.Clear();
+                skillStoneCountResset();
+                timeSet = true;
+            }
+           
 
         }
 
@@ -92,11 +119,13 @@ public class SkillStoneSystem : MonoBehaviour
 
     public void randomSkillStone()
     {
-        skillStonePanel.SetActive(true);
+        
+           
+        
+
 
         randomNumber = Random.Range(0, 101);
 
-        
         
         if (randomNumber >= commonDropRate)
         {
@@ -171,24 +200,12 @@ public class SkillStoneSystem : MonoBehaviour
         else if (randomNumber >= unCommonDropRate)
         {
 
-            int randomNum = Random.Range(0, 3);
+            int randomNum = Random.Range(0, 2);
 
             switch (randomNum)
             {
+     
                 case 0:
-                    if (skillStoneList.Contains(skillStones.bulletPenetrationSkillStone))
-                    {
-                        randomSkillStone();
-                    }
-                    else
-                    {
-                        skillStoneEnum = skillStones.bulletPenetrationSkillStone;
-
-                        Instantiate(skillStone, skillStoneItemHolder.transform);
-
-                    }
-                    break;
-                case 1:
                     if (skillStoneList.Contains(skillStones.healSkillStone))
                     {
                         randomSkillStone();
@@ -201,7 +218,7 @@ public class SkillStoneSystem : MonoBehaviour
 
                     }
                     break;
-                case 2:
+                case 1:
                     if (skillStoneList.Contains(skillStones.maxAmmunitionSkillStone))
                     {
                         randomSkillStone();
@@ -222,31 +239,87 @@ public class SkillStoneSystem : MonoBehaviour
 
         else if (randomNumber >= rareDropRate)
         {
-            if (skillStoneList.Contains(skillStones.ammoPrRelaod))
-            {
-                randomSkillStone();
-            }
-            else
-            {
-                skillStoneEnum = skillStones.ammoPrRelaod;
 
-                Instantiate(skillStone, skillStoneItemHolder.transform);
+
+            int randomNum = Random.Range(0, 1);
+
+            switch (randomNum)
+            {
+
+    
+                   
+                case 0:
+                    if (skillStoneList.Contains(skillStones.bulletPenetrationSkillStone))
+                    {
+                        randomSkillStone();
+                    }
+                    else
+                    {
+                        skillStoneEnum = skillStones.bulletPenetrationSkillStone;
+
+                        Instantiate(skillStone, skillStoneItemHolder.transform);
+
+                    }
+                    break;
+
+                default:
+                    break;
 
             }
         }
         else if (randomNumber >= epicDropRate)
         {
-            if (skillStoneList.Contains(skillStones.ekstraBulletSkillStone))
-            {
-                randomSkillStone();
-            }
-            else
-            {
-                skillStoneEnum = skillStones.ekstraBulletSkillStone;
+            int randomNum = Random.Range(0, 3);
 
-                Instantiate(skillStone, skillStoneItemHolder.transform);
+            switch (randomNum)
+            {
+
+                case 0:
+                    if (skillStoneList.Contains(skillStones.ekstraBulletSkillStone))
+                    {
+                        randomSkillStone();
+                    }
+                    else
+                    {
+                        skillStoneEnum = skillStones.ekstraBulletSkillStone;
+
+                        Instantiate(skillStone, skillStoneItemHolder.transform);
+
+                    }
+                    break;
+                case 1:
+                    if (skillStoneList.Contains(skillStones.explosiveBodies))
+                    {
+                        randomSkillStone();
+                    }
+                    else
+                    {
+                        skillStoneEnum = skillStones.explosiveBodies;
+
+                        Instantiate(skillStone, skillStoneItemHolder.transform);
+
+                    }
+                    break;
+                case 2:
+                    if (skillStoneList.Contains(skillStones.betryal))
+                    {
+                        randomSkillStone();
+                    }
+                    else
+                    {
+                        skillStoneEnum = skillStones.betryal;
+
+                        Instantiate(skillStone, skillStoneItemHolder.transform);
+
+                    }
+                    break;
+
+                default:
+                    break;
 
             }
+            
+            
 
         }
         else

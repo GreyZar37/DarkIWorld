@@ -1,24 +1,35 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class skillStoneEffect : MonoBehaviour
+public class skillStoneEffect : MonoBehaviour, IPointerEnterHandler
 {
 
 
-    public TextMeshProUGUI effectText;
+    string effectText;
+    TextMeshProUGUI discriptionTxt;
 
     public Sprite[] skillStoneFrames;
+    public Sprite[] upgradeIcon;
+
+
+
     public Image frame;
+    public Image icon;
 
 
     public Button skillStoneButton;
+    
+    
+
+
 
 
     private void Awake()
     {
 
-
+        discriptionTxt = GameObject.Find("DiscriptionTxt").GetComponent<TextMeshProUGUI>();
         skillStoneButton = GetComponent<Button>();
 
 
@@ -61,10 +72,15 @@ public class skillStoneEffect : MonoBehaviour
                 relaodSpeedSkillStone();
 
                 break;
-            case skillStones.ammoPrRelaod:
-                ammoPrRelaodSkillStone();
 
-                break;                
+            case skillStones.explosiveBodies:
+                explosiveBodiesSkillStone();
+
+                break;
+            case skillStones.betryal:
+                betryalSkillStone();
+
+                break;
 
         }
 
@@ -80,8 +96,9 @@ public class skillStoneEffect : MonoBehaviour
 
     public void attackSpeedSkillStone()
     {
-        effectText.text = "Shoot Speed +10%";
-        frame.sprite = skillStoneFrames[0];
+        effectText = "<color=yellow> Shoot Speed +10% </color>";
+        icon.sprite = upgradeIcon[0];
+
 
 
         skillStoneButton.onClick.AddListener(() =>
@@ -92,12 +109,15 @@ public class skillStoneEffect : MonoBehaviour
 
             destoryAllCards();
         });
+
+
     }
 
     public void healthSkillStone()
     {
-        effectText.text = "Max Health +20%";
-        frame.sprite = skillStoneFrames[0];
+        effectText = "<color=green>Max Health +20% </color>";
+        icon.sprite = upgradeIcon[1];
+
 
 
         skillStoneButton.onClick.AddListener(() =>
@@ -115,8 +135,9 @@ public class skillStoneEffect : MonoBehaviour
 
     public void damageSkillStone()
     {
-        effectText.text = "Damage +25%";
-        frame.sprite = skillStoneFrames[0];
+        effectText = "<color=red>Damage +25% </color>";
+        icon.sprite = upgradeIcon[2];
+
 
 
         skillStoneButton.onClick.AddListener(() =>
@@ -132,13 +153,14 @@ public class skillStoneEffect : MonoBehaviour
 
     public void relaodSpeedSkillStone()
     {
-        effectText.text = "Relaod Speed +29%";
-        frame.sprite = skillStoneFrames[0];
+        effectText = "<color=yellow>Reload Speed +15% </color>";
+        icon.sprite = upgradeIcon[3];
+
 
 
         skillStoneButton.onClick.AddListener(() =>
         {
-            PlayerStatMachine.instance.relaodSpeed -= PlayerStatMachine.instance.relaodSpeed * 0.20f;
+            PlayerStatMachine.instance.reloadTime -= PlayerStatMachine.instance.reloadTime * 0.15f;
             SkillStoneSystem.instance.skillStoneTakeAmount--;
             SkillStoneSystem.instance.skillStoneCountResset();
 
@@ -151,8 +173,9 @@ public class skillStoneEffect : MonoBehaviour
 
     public void maxAmmunitionSkillStone()
     {
-        effectText.text = "Max Ammunition +35%";
-        frame.sprite = skillStoneFrames[1];
+        effectText = "<color=yellow>Max Ammunition +35% </color>";
+        icon.sprite = upgradeIcon[4];
+
 
 
         skillStoneButton.onClick.AddListener(() =>
@@ -165,27 +188,13 @@ public class skillStoneEffect : MonoBehaviour
 
 
     }
-    public void bulletPenetrationSkillStone()
-    {
-        effectText.text = "Bullet Penetration +1";
-        frame.sprite = skillStoneFrames[1];
 
-
-        skillStoneButton.onClick.AddListener(() =>
-        {
-            PlayerStatMachine.instance.bulletPenetration += 1;
-            SkillStoneSystem.instance.skillStoneTakeAmount--;
-            SkillStoneSystem.instance.skillStoneCountResset();
-            destoryAllCards();
-        });
-
-
-    }
 
     public void healSkillStone()
     {
-        effectText.text = "Heal +50%";
-        frame.sprite = skillStoneFrames[1];
+        effectText = "<color=green> Heal +50% </color>";
+        icon.sprite = upgradeIcon[5];
+
 
 
         skillStoneButton.onClick.AddListener(() =>
@@ -203,30 +212,33 @@ public class skillStoneEffect : MonoBehaviour
     #endregion
 
     #region rareSkillStones
-
-    public void ammoPrRelaodSkillStone()
+    public void bulletPenetrationSkillStone()
     {
-        effectText.text = "Ammo relaod +1";
-        frame.sprite = skillStoneFrames[2];
+        effectText = "Bullet Penetration +1";
+        icon.sprite = upgradeIcon[6];
+
 
 
         skillStoneButton.onClick.AddListener(() =>
         {
-            PlayerStatMachine.instance.ammoPrRelaod += 1;
+            PlayerStatMachine.instance.bulletPenetration += 1;
             SkillStoneSystem.instance.skillStoneTakeAmount--;
             SkillStoneSystem.instance.skillStoneCountResset();
-
             destoryAllCards();
         });
+
+
     }
+
 
     #endregion
 
     #region epicSkillStones
     public void ekstraBulletSkillStone()
     {
-        effectText.text = "Exstra Bullet";
-        frame.sprite = skillStoneFrames[3];
+        effectText = "Exstra Bullet";
+        icon.sprite = upgradeIcon[7];
+
 
 
         skillStoneButton.onClick.AddListener(() =>
@@ -237,6 +249,76 @@ public class skillStoneEffect : MonoBehaviour
 
             destoryAllCards();
         });
+    }
+
+    public void betryalSkillStone()
+    {
+        icon.sprite = upgradeIcon[8];
+
+
+        if (PlayerStatMachine.instance.hasBetryal == false)
+        {
+            effectText = "On death enemies will shatter into pieces dealing<color=red> 25% of bullet damage </color>";
+
+            skillStoneButton.onClick.AddListener(() =>
+            {
+                PlayerStatMachine.instance.hasBetryal = true;
+                SkillStoneSystem.instance.skillStoneCountResset();
+                SkillStoneSystem.instance.skillStoneTakeAmount--;
+
+                destoryAllCards();
+            });
+        }
+        else
+        {
+            effectText = "Betrayal <color=red>damage +25%</color>";
+
+            skillStoneButton.onClick.AddListener(() =>
+            {
+                PlayerStatMachine.instance.betryalDamageMultiplier += 0.25f;
+                SkillStoneSystem.instance.skillStoneCountResset();
+                SkillStoneSystem.instance.skillStoneTakeAmount--;
+
+                destoryAllCards();
+            });
+        }
+
+
+
+    }
+    public void explosiveBodiesSkillStone()
+    {
+        icon.sprite = upgradeIcon[9];
+
+        if (PlayerStatMachine.instance.hasExplosiveBoodies == false)
+        {
+            effectText = "Enemies will explode dealing <color=red>15 damage</color> to all nearby enemies";
+
+            skillStoneButton.onClick.AddListener(() =>
+            {
+                PlayerStatMachine.instance.hasExplosiveBoodies = true;
+                SkillStoneSystem.instance.skillStoneCountResset();
+                SkillStoneSystem.instance.skillStoneTakeAmount--;
+
+                destoryAllCards();
+            });
+        }
+        else
+        {
+            effectText = "Explosive Bodies <color=red>damage +30%</color>";
+
+            skillStoneButton.onClick.AddListener(() =>
+            {
+                PlayerStatMachine.instance.enemyExplodeDamage += Mathf.RoundToInt(PlayerStatMachine.instance.enemyExplodeDamage * 0.30f);
+                SkillStoneSystem.instance.skillStoneCountResset();
+                SkillStoneSystem.instance.skillStoneTakeAmount--;
+
+
+                destoryAllCards();
+            });
+
+           
+        }
 
 
     }
@@ -250,5 +332,10 @@ public class skillStoneEffect : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        discriptionTxt.text = effectText;
     }
 }

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PlayerMechanics : MonoBehaviour
 {
@@ -22,11 +24,13 @@ public class PlayerMechanics : MonoBehaviour
     public AudioSource audioSource;
     
     public AudioClip[] hitSound;
-    public AudioClip loseSound;
 
     public ParticleSystem blood;
 
     public Slider healthBar;
+    public TextMeshProUGUI healthText;
+
+    public GameObject player;
 
     // Start is called before the first frame update
     void Start()
@@ -38,7 +42,7 @@ public class PlayerMechanics : MonoBehaviour
         audioSource = GameObject.Find("SFX AudioSource").GetComponent<AudioSource>();
 
 
-        originalMaterial = gameObject.GetComponent<SpriteRenderer>().material;
+        originalMaterial = player.GetComponent<SpriteRenderer>().material;
        
         maxPlayerHealth = PlayerStatMachine.instance.maxHealth;
 
@@ -54,12 +58,12 @@ public class PlayerMechanics : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-     
+        healthText.text = currentPlayerHealth.ToString() + "/" + maxPlayerHealth.ToString();
+
 
         maxPlayerHealth = PlayerStatMachine.instance.maxHealth;
         healthBar.maxValue = maxPlayerHealth;
         healthBar.value = currentPlayerHealth;
-
 
         if (currentPlayerHealth >= maxPlayerHealth)
         {
@@ -69,11 +73,11 @@ public class PlayerMechanics : MonoBehaviour
         {
 
             flashCurrentTime -= Time.deltaTime;
-            gameObject.GetComponent<SpriteRenderer>().material = flashMaterial;
+            player.GetComponent<SpriteRenderer>().material = flashMaterial;
 
             if (flashCurrentTime <= 0)
             {
-                gameObject.GetComponent<SpriteRenderer>().material = originalMaterial;
+                player.GetComponent<SpriteRenderer>().material = originalMaterial;
 
             }
         }        
@@ -88,6 +92,7 @@ public class PlayerMechanics : MonoBehaviour
 
         currentPlayerHealth -= damage;
         healthBar.value = currentPlayerHealth;
+        healthText.text = currentPlayerHealth.ToString() + "/" + maxPlayerHealth.ToString();
 
         if (currentPlayerHealth <= 0)
         {
@@ -98,15 +103,9 @@ public class PlayerMechanics : MonoBehaviour
 
     public void Die()
     {
-        audioSource.PlayOneShot(loseSound,0.3f);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         Destroy(gameObject);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.tag == "Enemy")
-        {
-            print("HIT EM");
-        }
-    }
+   
 }

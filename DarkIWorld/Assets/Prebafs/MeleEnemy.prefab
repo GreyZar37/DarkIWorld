@@ -42,7 +42,6 @@ GameObject:
   - component: {fileID: 79505432206160471}
   - component: {fileID: 79505432206160470}
   - component: {fileID: 79505432206160468}
-  - component: {fileID: 8294418500398690565}
   - component: {fileID: 3126680991008497417}
   m_Layer: 0
   m_Name: MeleEnemy
@@ -80,7 +79,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyHealth: 100
-  xpGain: 85
+  xpGain: 45
   audioSource: {fileID: 0}
   deathSound:
   - {fileID: 8300000, guid: e50fbf7de6e0f7146a0968523ee243fa, type: 3}
@@ -89,10 +88,15 @@ MonoBehaviour:
   hitSound:
   - {fileID: 8300000, guid: 54b3b109a2140f24aa3370e9190b159e, type: 3}
   - {fileID: 8300000, guid: c802c4fc9d483b54ebc523ae1afa9af3, type: 3}
+  explosionSound:
+  - {fileID: 8300000, guid: 1cc655301f89bd146a469fcb16fe78dc, type: 3}
+  - {fileID: 8300000, guid: 9bdfa9f9e0636714ab7d62b2ad79c98c, type: 3}
   damageTxt: {fileID: 2037489249205486809, guid: 172cb1dafb9b0a54eb469e4a1eafe414, type: 3}
   flashMaterial: {fileID: 2100000, guid: ccbc9bfcb0c0beb4e847be9142e010b4, type: 2}
   originalMaterial: {fileID: 0}
-  particleSystem_: {fileID: 7971779134538704883, guid: a7470aa7bb28a4b4d880a419d9769d51, type: 3}
+  bloodParticle: {fileID: 7971779134538704883, guid: a7470aa7bb28a4b4d880a419d9769d51, type: 3}
+  deathExplodeParticles: {fileID: 330982060744783343, guid: 31a28c6e5f77e2a4b8671da250b8692b, type: 3}
+  bullet: {fileID: 7361831037440657854, guid: 0a4da27d0b79d6649beee46c76e18102, type: 3}
 --- !u!114 &79505432206160470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -106,7 +110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   closeRangeDamage: 15
-  speed: 18
+  speed: 16
   stoopingDistance: 8
   retreatDistance: 15
   attackCooldown: 1
@@ -135,17 +139,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!210 &8294418500398690565
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 79505432206160467}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 3
 --- !u!60 &3126680991008497417
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -207,7 +200,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2095511311395709457}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -3.11, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 79505432206160472}
@@ -264,7 +257,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!70 &700854063858647535
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -278,6 +271,6 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.76886624, y: -2.1209881}
+  m_Offset: {x: 0.76886624, y: 0.98}
   m_Size: {x: 3.148986, y: 2.112673}
   m_Direction: 1

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class StartBullet : MonoBehaviour
 {
     public float speed;
@@ -11,19 +12,44 @@ public class StartBullet : MonoBehaviour
     public int penetration;
 
     public ParticleSystem particleSystem_;
+    SpriteRenderer spriteRenderer;
 
+    public bool spawnedFromEnemy;
 
+    float lifespan = 3f;
 
-    float lifespan = 5f;
-
+    float betryalDamageMultiplier;
 
     // Start is called before the first frame update
     void Start()
     {
-
-        damage = PlayerStatMachine.instance.damage;
-        penetration = PlayerStatMachine.instance.bulletPenetration;
+        betryalDamageMultiplier = PlayerStatMachine.instance.betryalDamageMultiplier;
         speed = PlayerStatMachine.instance.bulletSpeed;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+
+
+        if (!spawnedFromEnemy)
+        {
+            damage = PlayerStatMachine.instance.damage;
+            penetration = PlayerStatMachine.instance.bulletPenetration;
+
+
+        }
+        else
+        {
+            damage = Mathf.RoundToInt(PlayerStatMachine.instance.damage / 2 * betryalDamageMultiplier);
+            transform.localScale /= 1.5f;
+            spriteRenderer.color = new Color(1,1,1,0.5f);
+            
+            penetration = 0;
+            lifespan /= 3f;
+            speed /= 2f;
+            gameObject.GetComponent<TrailRenderer>().emitting = false;
+        }
+
+
+
 
 
         rb2D = gameObject.GetComponent<Rigidbody2D>();
@@ -34,17 +60,17 @@ public class StartBullet : MonoBehaviour
     {
        
 
-        
+      
         rb2D.velocity = transform.up * speed;
-
-
-
-
         lifespan -= Time.deltaTime;
-        
-        if(lifespan <= 0)
+
+
+
+
+
+        if (lifespan <= 0)
         {
-            Destroy(gameObject);
+            dissolve();
         }
         
     }
@@ -64,4 +90,16 @@ public class StartBullet : MonoBehaviour
             }
         }
     }
+
+    void dissolve()
+    {
+        gameObject.transform.localScale -= new Vector3(0.1f, 0.1f, 0.1f);
+
+        if (gameObject.transform.localScale.x <= 0)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+
 }
